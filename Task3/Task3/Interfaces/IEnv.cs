@@ -7,5 +7,6 @@ namespace Task3.Interfaces
         public double Longitude { get; }
         public string StormglassApiKey { get; }
         public string TomorrowApiKey { get; }
+        public string OpenWeatherMapApiKey { get; }
     }
 }

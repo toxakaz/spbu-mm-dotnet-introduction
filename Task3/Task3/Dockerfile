@@ -4,6 +4,7 @@ ENV Latitude=59.87519
 ENV Longitude=29.825433
 ENV StormglassApiKey=8ffc2534-a0e3-11ee-950b-0242ac130002-8ffc25a2-a0e3-11ee-950b-0242ac130002
 ENV TomorrowApiKey=NEm4jY12nsgwxdBPIB0giRPYw6QoNCso
+ENV OpenWeatherMapApiKey=e9c987890ed0c0633ae357f938a6c247
 
 USER app
 WORKDIR /app

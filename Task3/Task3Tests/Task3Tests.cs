@@ -10,6 +10,7 @@ namespace Task3Tests
     public class Tests
     {
         readonly Mock<IEnv> env = new();
+
         [SetUp]
         public void Setup()
         {
@@ -17,7 +18,9 @@ namespace Task3Tests
             env.Setup(x => x.Longitude).Returns(0);
             env.Setup(x => x.TomorrowApiKey).Returns("apiKey");
             env.Setup(x => x.StormglassApiKey).Returns("apiKey");
+            env.Setup(x => x.OpenWeatherMapApiKey).Returns("apiKey");
         }
+
         [Test]
         public void TestStormglassRequest()
         {
@@ -30,7 +33,6 @@ namespace Task3Tests
                     {
                         ""hours"": [
                             {
-                                ""time"": ""2023-12-31T00:00:00+00:00"",
                                 ""airTemperature"": {
                                     ""noaa"": 1
                                 },
@@ -87,10 +89,9 @@ namespace Task3Tests
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(@"
                     {
-                    ""timelines"": {
+                        ""timelines"": {
                             ""minutely"": [
                                 {
-                                    ""time"": ""2023-12-31T00:00:00+00:00"",
                                     ""values"": {
                                         ""temperature"": 1,
                                         ""cloudCover"": 2,
@@ -129,6 +130,53 @@ namespace Task3Tests
             Assert.That(weatherInfo.FreezingIntensity, Is.EqualTo("6"));
             Assert.That(weatherInfo.WindDirection, Is.EqualTo("7"));
             Assert.That(weatherInfo.WindSpeed, Is.EqualTo("8"));
+        }
+
+        [Test]
+        public void TestOpenWeatherMapRequest()
+        {
+            var mock = new Mock<HttpMessageHandler>();
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(@"
+                    {
+                        ""main"": {
+                            ""temp"": 1,
+                            ""humidity"": 2
+                        },
+                        ""wind"": {
+                            ""speed"": 3,
+                            ""deg"": 4
+                        },
+                        ""clouds"": {
+                            ""all"": 5
+                        }
+                    }"
+                )
+            };
+
+            mock.Protected().Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                ).ReturnsAsync(response);
+
+            var httpClient = new HttpClient(mock.Object);
+
+            IService stormglassService = new OpenWeatherMap(httpClient, env.Object);
+
+            var weatherInfo = stormglassService.GetWeather();
+
+            Assert.That(weatherInfo, Is.Not.Null);
+            Assert.That(weatherInfo.Temperature, Is.EqualTo("1"));
+            Assert.That(weatherInfo.CloudCover, Is.EqualTo("5"));
+            Assert.That(weatherInfo.Humidity, Is.EqualTo("2"));
+            Assert.That(weatherInfo.RainIntensity, Is.EqualTo("No data"));
+            Assert.That(weatherInfo.SnowIntensity, Is.EqualTo("No data"));
+            Assert.That(weatherInfo.FreezingIntensity, Is.EqualTo("No data"));
+            Assert.That(weatherInfo.WindDirection, Is.EqualTo("4"));
+            Assert.That(weatherInfo.WindSpeed, Is.EqualTo("3"));
         }
     }
 }

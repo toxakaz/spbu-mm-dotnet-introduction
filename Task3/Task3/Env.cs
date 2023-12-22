@@ -8,6 +8,7 @@ namespace Task3
         public double Longitude => double.Parse(GetEnvironmentVariable("Longitude"));
         public string StormglassApiKey => GetEnvironmentVariable("StormglassApiKey");
         public string TomorrowApiKey => GetEnvironmentVariable("TomorrowApiKey");
+        public string OpenWeatherMapApiKey => GetEnvironmentVariable("OpenWeatherMapApiKey");
         private static string GetEnvironmentVariable(string name)
         {
             return Environment.GetEnvironmentVariable(name) ?? throw new Exception($"Environment variable \"{name}\" not found");

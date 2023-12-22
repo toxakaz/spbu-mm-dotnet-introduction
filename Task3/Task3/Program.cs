@@ -11,6 +11,7 @@ internal class Program
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<IService, Stormglass>();
         builder.Services.AddScoped<IService, Tomorrow>();
+        builder.Services.AddScoped<IService, OpenWeatherMap>();
         builder.Services.AddScoped<IEnv, Env>();
 
         builder.Services.AddControllers();
